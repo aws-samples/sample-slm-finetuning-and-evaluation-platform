@@ -17,6 +17,18 @@ catalog entry, not new training code.
 - Hosting: one `cdk deploy` puts the whole application in your account behind Amazon CloudFront
   with Amazon Cognito sign-in. The backend also runs locally against disk with no AWS account.
 
+## What it looks like
+
+![The platform home page: a hero with live model, provider, dataset and race
+counts; a guided path that profiles a dataset and proposes a race; the four-step
+manual path from data to a shipped model; and the five training objectives](docs/hero.png)
+
+The home page of a running deployment. Newcomers take the guided path, where an
+agent profiles the dataset and proposes a ready-to-run race with its cost shown
+before anything bills; everyone else takes the four-step manual path. The model
+and provider counts are live and include models onboarded from Hugging Face in
+that deployment, so a fresh install starts at the 30 built-in catalog entries.
+
 ## Sample code disclaimer
 
 This repository is sample code, published for demonstration and educational purposes. It is not
