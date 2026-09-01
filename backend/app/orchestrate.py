@@ -345,10 +345,30 @@ def preflight() -> dict[str, Any]:
     def add(name: str, ok: bool, detail: str) -> None:
         checks.append({"check": name, "ok": ok, "detail": detail})
 
+    def fail(name: str, detail: str, exc: Exception) -> None:
+        """Record a failed check WITHOUT the raw exception text.
+
+        The resource NAMES in these messages are fine to return — the caller is the
+        deployment's own operator and `_public_config` echoes bucket/role/image back
+        anyway. The botocore message body is not: on an AccessDenied it spells out the
+        execution-role ARN that was denied, and it carries SDK internals besides.
+        What the operator actually needs to act is the error CODE (AccessDenied,
+        NoSuchBucket, 404), so return that and log the rest.
+        """
+        from .obs import log_event
+
+        code = ""
+        response = getattr(exc, "response", None)
+        if isinstance(response, dict):
+            code = str(response.get("Error", {}).get("Code") or "")
+        log_event("config.preflight.check_failed", level="WARNING",
+                  check=name, error=f"{type(exc).__name__}: {exc}")
+        add(name, False, f"{detail} ({code or type(exc).__name__})")
+
     try:
         _, boto_sess = _session(cfg)
     except Exception as e:  # noqa: BLE001
-        add("credentials", False, f"could not create AWS session: {e}")
+        fail("credentials", "could not create an AWS session", e)
         return {"ok": False, "config": _public_config(cfg), "checks": checks}
 
     # 1. Caller identity (are credentials valid + which account?)
@@ -362,7 +382,7 @@ def preflight() -> dict[str, Any]:
         else:
             add("account_match", True, f"account {acct} matches config")
     except Exception as e:  # noqa: BLE001
-        add("credentials", False, f"STS get-caller-identity failed: {e}")
+        fail("credentials", "STS get-caller-identity failed", e)
         return {"ok": False, "config": _public_config(cfg), "checks": checks}
 
     # 2. S3 bucket reachable
@@ -370,7 +390,7 @@ def preflight() -> dict[str, Any]:
         boto_sess.client("s3").head_bucket(Bucket=cfg.bucket)
         add("s3_bucket", True, f"bucket {cfg.bucket} is reachable")
     except Exception as e:  # noqa: BLE001
-        add("s3_bucket", False, f"cannot access bucket {cfg.bucket}: {e}")
+        fail("s3_bucket", f"cannot access bucket {cfg.bucket}", e)
 
     # 3. SageMaker execution role exists
     try:
@@ -378,7 +398,7 @@ def preflight() -> dict[str, Any]:
         boto_sess.client("iam").get_role(RoleName=role_name)
         add("execution_role", True, f"role {role_name} exists")
     except Exception as e:  # noqa: BLE001
-        add("execution_role", False, f"cannot find role {cfg.role_arn}: {e}")
+        fail("execution_role", f"cannot find role {cfg.role_arn}", e)
 
     # 4. Training image present in ECR
     try:
@@ -388,7 +408,7 @@ def preflight() -> dict[str, Any]:
         ecr.describe_images(repositoryName=repo, imageIds=[{"imageTag": tag}])
         add("training_image", True, f"image {repo}:{tag} found in ECR")
     except Exception as e:  # noqa: BLE001
-        add("training_image", False, f"training image not found ({cfg.image_uri}): {e}")
+        fail("training_image", f"training image not found ({cfg.image_uri})", e)
 
     return {
         "ok": all(c["ok"] for c in checks),
