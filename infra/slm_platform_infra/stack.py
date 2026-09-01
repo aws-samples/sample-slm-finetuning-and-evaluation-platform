@@ -244,13 +244,9 @@ class SlmPlatformInfraStack(Stack):
             enforce_ssl=True,
             removal_policy=RemovalPolicy.DESTROY,
             auto_delete_objects=True,
-            cors=[
-                s3.CorsRule(
-                    allowed_methods=[s3.HttpMethods.GET, s3.HttpMethods.PUT],
-                    allowed_origins=["*"],
-                    allowed_headers=["*"],
-                )
-            ],
+            # CORS is attached later (search add_cors_rule): the allowed origins are
+            # this deployment's own URLs, which are not known until the CloudFront
+            # distribution below has been created.
         )
 
         spa_bucket = s3.Bucket(
@@ -870,13 +866,37 @@ class SlmPlatformInfraStack(Stack):
         if custom_domain:
             app_urls.append(f"https://{custom_domain}/")
 
+        # Data-bucket CORS, scoped to THIS deployment's own origins. It was `["*"]`,
+        # which let any web page a signed-in user visited drive a leaked presigned URL
+        # from their browser. An Origin header never carries a path or a trailing
+        # slash, so strip the slash app_urls needs for Cognito callbacks. Headers are
+        # narrowed to content-type — the SPA's presigned PUT (frontend/src/api.ts:65)
+        # sets no other request header.
+        data_bucket.add_cors_rule(
+            allowed_methods=[s3.HttpMethods.GET, s3.HttpMethods.PUT],
+            allowed_origins=[u.rstrip("/") for u in app_urls],
+            allowed_headers=["content-type"],
+        )
+
         user_pool_client = user_pool.add_client(
             "AppClient",
             user_pool_client_name=f"{prefix}-app",
             generate_secret=False,  # public SPA client
-            auth_flows=cognito.AuthFlow(user_password=True, user_srp=True),
+            # USER_PASSWORD_AUTH is deliberately NOT enabled: it accepts a raw
+            # username+password over the API and is the flow credential-stuffing
+            # targets. The hosted UI signs in through SRP, so nothing needs it.
+            auth_flows=cognito.AuthFlow(user_srp=True),
             o_auth=cognito.OAuthSettings(
-                flows=cognito.OAuthFlows(implicit_code_grant=True),
+                # Authorization CODE grant with PKCE, not the implicit grant. Implicit
+                # returns the id_token in the URL fragment, where it lands in history
+                # and referrers and — because the SPA had no way to bind the response
+                # to the request it made — any token pasted into the fragment was
+                # accepted, so one crafted link could drop a visitor into someone
+                # else's session. The code grant hands back a single-use code that is
+                # worthless without the PKCE verifier held in the browser that started
+                # the flow (see frontend/src/auth.ts). Cognito supports PKCE for
+                # public clients, so this needs no client secret.
+                flows=cognito.OAuthFlows(authorization_code_grant=True),
                 scopes=[cognito.OAuthScope.OPENID, cognito.OAuthScope.EMAIL, cognito.OAuthScope.PROFILE],
                 callback_urls=app_urls,
                 logout_urls=app_urls,

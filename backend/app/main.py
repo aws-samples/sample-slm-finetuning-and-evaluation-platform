@@ -2797,7 +2797,13 @@ def eval_status(job_name: str) -> dict:
         try:
             metrics = fetch_metrics(job_name)
         except Exception as e:  # metrics fetch failure shouldn't hide job status
-            status["metricsError"] = str(e)
+            # Do NOT return str(e): the S3/tarfile error text carries bucket names and
+            # key paths. Log the detail, hand the caller a stable marker.
+            from .obs import log_event
+
+            log_event("eval.metrics.fetch_failed", level="WARNING",
+                      job=job_name, error=f"{type(e).__name__}: {e}")
+            status["metricsError"] = "metrics could not be read for this job"
     status["metrics"] = metrics
     return status
 
@@ -3562,7 +3568,16 @@ def check_config() -> dict:
     try:
         return preflight()
     except Exception as e:
-        raise HTTPException(status_code=502, detail=f"preflight failed: {e}")
+        # The botocore text here names the execution-role ARN on an AccessDenied and
+        # the bucket/account on others. Log it; return a fixed message.
+        from .obs import log_event
+
+        log_event("config.preflight.failed", level="WARNING",
+                  error=f"{type(e).__name__}: {e}")
+        raise HTTPException(
+            status_code=502,
+            detail="preflight failed; see the API function's CloudWatch logs for detail",
+        ) from e
 
 
 @app.post("/api/config/reset-cutoff")

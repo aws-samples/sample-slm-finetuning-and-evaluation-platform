@@ -185,6 +185,74 @@ def test_validate_snippet_rejects_private_name_pivot():
             validate_snippet(snip)
 
 
+def test_validate_snippet_rejects_aliased_builtins():
+    """Sandbox-escape regression, and the reason the check is an allowlist rather than
+    a blocklist. Rejecting `eval(...)` at the CALL SITE was bypassable by renaming:
+    `e = eval` produces no ast.Call whose func is a forbidden Name, and the payload
+    string passed to it is never AST-visited. That mattered most on the DEPLOY path,
+    where build_lambda_zip packages the snippet into a Lambda that imports it with
+    full builtins and no sandbox. Every free name a snippet reads must now be one it
+    bound itself, a safe builtin, or an allowlisted module."""
+    from app.reward_functions import RewardError, validate_snippet
+
+    aliases = [
+        # every binding route to a forbidden builtin
+        "def reward(r, g):\n    e = eval\n    return float(e('1'))\n",
+        "def reward(r, g):\n    o = open\n    o('/etc/passwd')\n    return 1.0\n",
+        "def reward(r, g):\n    f = [eval]\n    return float(f[0]('1'))\n",
+        "def reward(r, g, f=eval):\n    return float(f('1'))\n",
+        "def reward(r, g):\n    d = {'k': eval}\n    return float(d['k']('1'))\n",
+        "def reward(r, g):\n    a, b = eval, open\n    return float(a('1'))\n",
+        "def reward(r, g):\n    return float((e := eval)('1'))\n",
+        "def reward(r, g):\n    return float([eval for q in [1]][0]('1'))\n",
+        "def reward(r, g):\n    f = lambda x, e=eval: e(x)\n    return float(f('1'))\n",
+        # bare reads of builtins outside the safe subset
+        "def reward(r, g):\n    c = compile\n    return 1.0\n",
+        "def reward(r, g):\n    i = __import__\n    return 1.0\n",
+        "def reward(r, g):\n    b = breakpoint\n    return 1.0\n",
+        "def reward(r, g):\n    x = globals\n    return 1.0\n",
+        # a free name that is neither bound nor allowlisted
+        "def reward(r, g):\n    return float(mystery)\n",
+        # rebinding a name the sandbox owns
+        "def reward(r, g):\n    global scoring\n    return 1.0\n",
+    ]
+    for snip in aliases:
+        with pytest.raises(RewardError):
+            validate_snippet(snip)
+
+
+def test_validate_snippet_still_accepts_ordinary_scoring_code():
+    """The allowlist must not reject legitimate reward logic — otherwise it becomes
+    the reason someone disables it. Covers the shapes real snippets use."""
+    from app.reward_functions import validate_snippet
+
+    ok = [
+        # scoring reached both ways: imported, and via the injected global
+        "import scoring\n\ndef reward(response, ground_truth):\n    return scoring.score('token_f1', response, ground_truth)\n",
+        "def reward(response, ground_truth):\n    return scoring.score('token_f1', response, ground_truth)\n",
+        # comprehensions, loops, a helper function, exception binding, zip/sum
+        "def reward(response, ground_truth):\n"
+        "    words = [w.strip() for w in str(response).split(',')]\n"
+        "    hits = 0\n"
+        "    for w in words:\n"
+        "        if w in str(ground_truth):\n"
+        "            hits += 1\n"
+        "    return min(1.0, hits / max(1, len(words)))\n",
+        "def helper(s):\n    return len(s)\n\ndef reward(response, ground_truth):\n    return min(1.0, helper(str(response)) / 100.0)\n",
+        "import json\n\ndef reward(response, ground_truth):\n"
+        "    try:\n        json.loads(response)\n        return 1.0\n"
+        "    except json.JSONDecodeError as err:\n        return 0.0\n",
+        "from collections import Counter\nfrom math import sqrt\n\n"
+        "def reward(response, ground_truth):\n    return min(1.0, sqrt(len(Counter(response.split()))) / 10.0)\n",
+        "def reward(response, ground_truth):\n"
+        "    a = str(response).split()\n    b = str(ground_truth).split()\n"
+        "    same = sum(1 for x, y in zip(a, b) if x == y)\n"
+        "    return min(1.0, same / max(1, len(b)))\n",
+    ]
+    for snip in ok:
+        validate_snippet(snip)  # must not raise
+
+
 def test_safe_module_facade_has_no_escape_edge():
     """The second layer, independent of the AST pass: _safe_import hands out a
     _SafeModule façade, not the real module, so even a snippet that defeated

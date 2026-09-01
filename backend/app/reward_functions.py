@@ -176,7 +176,14 @@ def validate_snippet(snippet: str) -> None:
                         f"{module}.{alias.name} is not available to a reward snippet "
                         f"(allowed: {', '.join(sorted(_MODULE_EXPORTS[module]))})"
                     )
-        # forbid dangerous builtins
+        # Forbid dangerous builtins AT THE CALL SITE. This is kept only because it
+        # produces the clearest message for the obvious `eval(...)` case; it is NOT
+        # the guard. A call-site check alone was bypassable by binding the builtin to
+        # another name first — `e = eval` then `e("...")` never produces an ast.Call
+        # whose func is a Name in _FORBIDDEN_CALLS, and the payload string is never
+        # AST-visited at all. The allowlist over name LOADS below is what actually
+        # closes that, for every binding route (assignment, list element, default
+        # argument, comprehension, …) rather than one at a time.
         if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id in _FORBIDDEN_CALLS:
             raise RewardError(f"{node.func.id}() is not allowed in a reward snippet")
         # Forbid EVERY private identifier, not just dunders — attribute access and
@@ -197,8 +204,95 @@ def validate_snippet(snippet: str) -> None:
                 f"use of the private name {node.id!r} is not allowed in a reward "
                 "snippet (anything starting with '_' is rejected)"
             )
+        # `global`/`nonlocal` would let a snippet rebind a name the sandbox owns.
+        if isinstance(node, (ast.Global, ast.Nonlocal)):
+            raise RewardError("global/nonlocal are not allowed in a reward snippet")
+
+    # ALLOWLIST every free name the snippet reads. This is the real guard, and it
+    # replaces a blocklist that could be sidestepped by renaming: `e = eval` binds a
+    # dangerous builtin under a harmless name, and a call-site blocklist never sees
+    # it. Instead of enumerating what is forbidden, enumerate what may be read — a
+    # name the snippet itself binds, a safe builtin, or an allowlisted module — and
+    # reject everything else. `eval`, `open`, `__import__`, `compile`, `breakpoint`
+    # and every other builtin outside _SAFE_BUILTIN_NAMES fail here no matter how
+    # they are reached, because reading the name at all is what gets rejected.
+    bound = _bound_names(tree)
+    allowed = bound | set(_SAFE_BUILTIN_NAMES) | set(_ALLOWED_IMPORTS)
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load) and node.id not in allowed:
+            raise RewardError(
+                f"the name {node.id!r} is not available to a reward snippet. A snippet may "
+                f"use its own variables, the allowlisted modules {sorted(_ALLOWED_IMPORTS)}, "
+                "and a safe subset of builtins — anything else (eval, open, __import__, "
+                "compile, …) is rejected however it is reached"
+            )
     if not has_reward:
         raise RewardError("snippet must define a function `reward(response, ground_truth)`")
+
+
+def _bound_names(tree: ast.AST) -> set[str]:
+    """Every name the snippet itself binds, anywhere in it.
+
+    Deliberately scope-INSENSITIVE: one flat set across the whole snippet. That is
+    more permissive than Python's real scoping (a comprehension variable leaks into
+    the set), but it can only ever let the snippet read a name IT defined, never a
+    builtin it did not — which is the property the allowlist needs. Being lenient
+    here also means the check never rejects legitimate scoring code for a scoping
+    subtlety, so the security rule does not become the reason someone disables it."""
+    names: set[str] = set()
+
+    def add_target(t: ast.AST) -> None:
+        # Assignment targets nest: `a, (b, *c) = …`, `obj.attr`, `d[k]`. Only bare
+        # Names bind; Attribute/Subscript targets mutate something already bound.
+        if isinstance(t, ast.Name):
+            names.add(t.id)
+        elif isinstance(t, (ast.Tuple, ast.List)):
+            for el in t.elts:
+                add_target(el)
+        elif isinstance(t, ast.Starred):
+            add_target(t.value)
+
+    def add_args(a: ast.arguments) -> None:
+        for arg in [*a.posonlyargs, *a.args, *a.kwonlyargs, a.vararg, a.kwarg]:
+            if arg is not None:
+                names.add(arg.arg)
+
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            names.add(node.name)
+            add_args(node.args)
+        elif isinstance(node, ast.Lambda):
+            add_args(node.args)
+        elif isinstance(node, ast.ClassDef):
+            names.add(node.name)
+        elif isinstance(node, (ast.Import, ast.ImportFrom)):
+            for alias in node.names:
+                # `import a.b` binds `a`; the import rules above already reject dots.
+                names.add((alias.asname or alias.name).split(".")[0])
+        elif isinstance(node, ast.Assign):
+            for t in node.targets:
+                add_target(t)
+        elif isinstance(node, (ast.AnnAssign, ast.AugAssign)):
+            add_target(node.target)
+        elif isinstance(node, ast.NamedExpr):  # walrus
+            add_target(node.target)
+        elif isinstance(node, (ast.For, ast.AsyncFor)):
+            add_target(node.target)
+        elif isinstance(node, ast.comprehension):
+            add_target(node.target)
+        elif isinstance(node, (ast.With, ast.AsyncWith)):
+            for item in node.items:
+                if item.optional_vars is not None:
+                    add_target(item.optional_vars)
+        elif isinstance(node, ast.ExceptHandler) and node.name:
+            names.add(node.name)
+        elif isinstance(node, ast.MatchAs) and node.name:
+            names.add(node.name)
+        elif isinstance(node, ast.MatchStar) and node.name:
+            names.add(node.name)
+        elif isinstance(node, ast.MatchMapping) and node.rest:
+            names.add(node.rest)
+    return names
 
 
 # --- restricted execution sandbox (dry-run) -------------------------------- #

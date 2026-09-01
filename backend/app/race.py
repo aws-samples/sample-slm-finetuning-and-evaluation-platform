@@ -84,7 +84,11 @@ def _normalize_notify_emails(emails: list[str] | None) -> list[str]:
         if not isinstance(raw, str):
             continue
         e = raw.strip().lower()
-        if not e or e in seen or not _EMAIL_RE.match(e):
+        # Length-cap BEFORE the regex. _EMAIL_RE's three [^@\s]+ runs are ambiguous
+        # (the last two both match dots), so a long dotless string backtracks
+        # quadratically. 254 is the RFC 5321 maximum for a forward path, so nothing
+        # legitimate is lost and the worst case becomes trivial.
+        if not e or len(e) > 254 or e in seen or not _EMAIL_RE.match(e):
             continue
         seen.add(e)
         out.append(e)

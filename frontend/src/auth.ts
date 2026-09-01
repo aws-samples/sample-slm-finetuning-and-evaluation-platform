@@ -3,15 +3,24 @@
 
 // Cognito Hosted-UI login for the SPA.
 //
-// Flow (implicit grant — no backend token exchange needed for this SPA):
+// Flow (authorization CODE grant with PKCE — no client secret, no backend needed):
 //   1. On load, fetch runtime /config.json (written by CDK) for the Cognito
 //      domain / client id / region. If auth isn't configured, the app runs
 //      open (local dev / pre-Cognito deploys).
-//   2. If we just came back from Hosted UI, the URL hash carries the tokens —
-//      capture the id_token into sessionStorage and clean the URL.
-//   3. If we have no token, redirect to the Hosted UI login.
+//   2. To sign in, mint a random PKCE verifier and a `state` nonce, keep both in
+//      sessionStorage, and send the SHA-256 of the verifier as code_challenge.
+//   3. Hosted UI redirects back with `?code=&state=`. Reject the response unless
+//      `state` matches what we stored — that binding is what makes a crafted
+//      callback link useless — then exchange the code at /oauth2/token using the
+//      verifier, and keep the id_token in sessionStorage.
 //   4. Install a global fetch wrapper so every /api request carries
 //      `Authorization: Bearer <id_token>`. A 401 clears the token and re-logs-in.
+//
+// Why not the implicit grant: it returns the id_token in the URL fragment, which
+// leaks through history and referrers, and the SPA cannot tell a token it asked
+// for from one an attacker pasted in — so a single link could put a victim into
+// the attacker's tenant. A code is single-use and worthless without the verifier
+// that never leaves the browser which started the flow.
 
 export interface RuntimeConfig {
   // e.g. slm-platform-<stack-guid>.auth.us-east-1.amazoncognito.com. The
@@ -23,6 +32,8 @@ export interface RuntimeConfig {
 }
 
 const TOKEN_KEY = "slm_id_token";
+const VERIFIER_KEY = "slm_pkce_verifier";
+const STATE_KEY = "slm_oauth_state";
 
 let config: RuntimeConfig = {};
 
@@ -45,13 +56,96 @@ function redirectUri(): string {
   return `${window.location.origin}/`;
 }
 
-function loginUrl(): string {
-  const u = new URL(`https://${config.cognitoDomain}/login`);
+// base64url of arbitrary bytes (no padding) — the encoding PKCE and OAuth use.
+function b64url(bytes: Uint8Array): string {
+  let out = "";
+  for (const b of bytes) out += String.fromCharCode(b);
+  return btoa(out).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function randomUrlSafe(byteLength: number): string {
+  const bytes = new Uint8Array(byteLength);
+  crypto.getRandomValues(bytes);
+  return b64url(bytes);
+}
+
+async function codeChallenge(verifier: string): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier));
+  return b64url(new Uint8Array(digest));
+}
+
+// Start the code+PKCE flow. Stores the verifier and state, then navigates away.
+async function beginLogin(): Promise<void> {
+  // 32 bytes → 43 base64url chars, the minimum RFC 7636 allows.
+  const verifier = randomUrlSafe(32);
+  const state = randomUrlSafe(16);
+  sessionStorage.setItem(VERIFIER_KEY, verifier);
+  sessionStorage.setItem(STATE_KEY, state);
+  const u = new URL(`https://${config.cognitoDomain}/oauth2/authorize`);
   u.searchParams.set("client_id", config.cognitoClientId!);
-  u.searchParams.set("response_type", "token"); // implicit grant
+  u.searchParams.set("response_type", "code");
   u.searchParams.set("scope", "openid email profile");
   u.searchParams.set("redirect_uri", redirectUri());
-  return u.toString();
+  u.searchParams.set("state", state);
+  u.searchParams.set("code_challenge", await codeChallenge(verifier));
+  u.searchParams.set("code_challenge_method", "S256");
+  window.location.assign(u.toString());
+}
+
+// Exchange `?code=` for tokens, if this load is a callback. Returns true when a
+// token was obtained. The state check is the security-critical part: without it
+// the app would accept a code (or in the old implicit flow, a token) that some
+// other page initiated, which is exactly the session-fixation this replaces.
+async function completeLoginFromQuery(): Promise<boolean> {
+  const q = new URLSearchParams(window.location.search);
+  const code = q.get("code");
+  const returnedState = q.get("state");
+  const stored = sessionStorage.getItem(STATE_KEY);
+  const verifier = sessionStorage.getItem(VERIFIER_KEY);
+  // Always clear the one-shot values, whether or not this succeeds.
+  sessionStorage.removeItem(STATE_KEY);
+  sessionStorage.removeItem(VERIFIER_KEY);
+  const clean = () =>
+    window.history.replaceState({}, document.title, window.location.pathname);
+
+  if (q.get("error")) {
+    clean();
+    return false;
+  }
+  if (!code) return false;
+  if (!stored || returnedState !== stored || !verifier) {
+    // Unsolicited or replayed callback — drop it and start a fresh flow.
+    clean();
+    return false;
+  }
+  try {
+    const res = await fetch(`https://${config.cognitoDomain}/oauth2/token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        grant_type: "authorization_code",
+        client_id: config.cognitoClientId!,
+        code,
+        redirect_uri: redirectUri(),
+        code_verifier: verifier,
+      }).toString(),
+    });
+    if (!res.ok) {
+      clean();
+      return false;
+    }
+    const tokens = (await res.json()) as { id_token?: string };
+    if (!tokens.id_token) {
+      clean();
+      return false;
+    }
+    sessionStorage.setItem(TOKEN_KEY, tokens.id_token);
+    clean();
+    return true;
+  } catch {
+    clean();
+    return false;
+  }
 }
 
 export function logout(): void {
@@ -62,19 +156,6 @@ export function logout(): void {
     u.searchParams.set("logout_uri", redirectUri());
     window.location.assign(u.toString());
   }
-}
-
-function captureTokenFromHash(): boolean {
-  if (!window.location.hash.includes("id_token=")) return false;
-  const params = new URLSearchParams(window.location.hash.slice(1));
-  const idToken = params.get("id_token");
-  if (idToken) {
-    sessionStorage.setItem(TOKEN_KEY, idToken);
-    // Strip the token fragment from the URL.
-    window.history.replaceState({}, document.title, window.location.pathname);
-    return true;
-  }
-  return false;
 }
 
 function getToken(): string | null {
@@ -144,7 +225,7 @@ function installFetchInterceptor(): void {
     const res = await original(input as RequestInfo, init);
     if (isApi && res.status === 401 && authConfigured()) {
       sessionStorage.removeItem(TOKEN_KEY);
-      window.location.assign(loginUrl());
+      await beginLogin();
     }
     return res;
   };
@@ -158,10 +239,10 @@ export async function ensureAuth(): Promise<void> {
   if (!authConfigured()) return; // open mode (local dev / no Cognito)
 
   installFetchInterceptor();
-  captureTokenFromHash();
+  await completeLoginFromQuery();
 
   if (!getToken()) {
-    window.location.assign(loginUrl());
+    await beginLogin();
     // Halt rendering while the browser navigates away.
     await new Promise(() => {});
   }
