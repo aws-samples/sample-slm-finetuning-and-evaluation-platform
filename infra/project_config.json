@@ -1,0 +1,13 @@
+{
+  "//solution": "AWS Solution identity. DO NOT EDIT IN A FORK — these three fields are the join keys for the published solution's deployment and API-usage metrics, and changing them in a fork attributes your deployments to this solution. `id` and `version` are rendered into (a) every CloudFormation stack Description, which is how installs are counted, and (b) the AWS SDK user-agent suffix, which is how API calls are attributed. `version` is a single source of truth on purpose: bump it HERE for a release and both signals move together. `name` is cosmetic to the metrics join (that keys off `id`) but it is what a customer reads in their CloudFormation console, so keep it identical to the published solution name.",
+  "solution": {
+    "id": "SO0363",
+    "name": "SLM Finetuning and Evaluation Platform",
+    "version": "v1.0.0"
+  },
+  "//notifications": "Race-completion email addresses — properties of THIS deployment, not of the code, so they live here rather than as app.py defaults (a fork's deploy must never mail this repo's author). Both must be verified SES identities while the account is in the SES sandbox: the sender to SEND, the admin to RECEIVE. Empty is a supported value and the shipped default: an empty sender makes notify.py skip sending (it logs send_skipped_no_sender) rather than fail every race with MessageRejected, which is the honest outcome for an account where nothing is verified yet. `-c notifyFromEmail=...` / `-c notifyAdminEmail=...` still override for a single deploy. NOTE: `admin_email` is read by the deployments that HAVE the admin-CC feature; it is declared here so the key does not have to be introduced separately on each branch.",
+  "notifications": {
+    "from_email": "",
+    "admin_email": ""
+  }
+}

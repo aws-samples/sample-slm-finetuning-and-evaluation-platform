@@ -1,0 +1,13 @@
+# V3 SageMaker SDK for the serverless model-customization engine. Installed into
+# an ISOLATED venv (/opt/serverless-venv in the Dockerfile), NEVER into the app
+# env — it is mutually exclusive with the V2 SDK (sagemaker>=2.220,<3) the
+# LLaMA-Factory path uses. The standalone launcher (app/engines/serverless_launcher.py)
+# runs under this venv via subprocess; SLM_SERVERLESS_PYTHON points the engine at it.
+#
+# Versions are the ones proven end-to-end on real AWS (spike + in-platform e2e,
+# 2026-06-12/13): sagemaker-core 2.x provides the dotted `sagemaker.core` the
+# trainers import. boto3 is the SDK-agnostic AWS client the launcher uses.
+sagemaker-train==1.13.1
+sagemaker-core==2.13.1
+sagemaker-mlflow==0.4.0
+boto3>=1.34

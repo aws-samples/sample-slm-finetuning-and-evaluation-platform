@@ -1,0 +1,5 @@
+# No extra inference deps are needed: the LLaMA-Factory base image already ships
+# torch, transformers, fastapi + uvicorn (it serves its own API), and peft (for
+# adapter mode). The Dockerfile installs nothing, so this file is just a
+# documented hook — add a package here AND a `pip install -r` line in the
+# Dockerfile only if a specific model genuinely needs it.

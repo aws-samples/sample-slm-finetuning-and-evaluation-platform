@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 1152" width="1240" height="1152">
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#5A6B7B"/></marker><filter id="sh" x="-12%" y="-12%" width="124%" height="140%"><feDropShadow dx="0" dy="1.5" stdDeviation="2.5" flood-color="#232F3E" flood-opacity="0.13"/></filter></defs>
+<rect width="1240" height="1152" fill="#FFFFFF"/>
+<rect x="30" y="24" width="1180" height="138" rx="12" fill="#F7F8F9" stroke="#D5DBDB" stroke-width="1.5"/>
+<text x="52" y="51" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14" font-weight="700" fill="#5A6B7B" letter-spacing="1.4">PRESENTATION AND API TIER</text>
+<rect x="55" y="62" width="268" height="82" rx="9" fill="#FFFFFF" stroke="#D5DBDB" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="55" y="62" width="5" height="82" rx="2.5" fill="#8C4FFF"/>
+<rect x="73" y="78" width="38" height="38" rx="8" fill="#8C4FFF"/>
+<path d="M92 87 L101 91 V98 C101 104 97 107 92 108 C87 107 83 104 83 98 V91 Z" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"/>
+<text x="123" y="95" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#232F3E">Amazon CloudFront</text>
+<text x="123" y="114" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" fill="#5A6B7B">+ AWS WAF</text>
+<rect x="347" y="62" width="268" height="82" rx="9" fill="#FFFFFF" stroke="#D5DBDB" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="347" y="62" width="5" height="82" rx="2.5" fill="#DD344C"/>
+<rect x="365" y="78" width="38" height="38" rx="8" fill="#DD344C"/>
+<rect x="376" y="95" width="16" height="12" rx="2.5" fill="#FFFFFF"/><path d="M379.5 95 V91 a4.5 4.5 0 0 1 9 0 V95" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+<text x="415" y="95" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#232F3E">Amazon Cognito</text>
+<text x="415" y="114" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" fill="#5A6B7B">Per-user isolation</text>
+<rect x="639" y="62" width="268" height="82" rx="9" fill="#FFFFFF" stroke="#D5DBDB" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="639" y="62" width="5" height="82" rx="2.5" fill="#E7157B"/>
+<rect x="657" y="78" width="38" height="38" rx="8" fill="#E7157B"/>
+<path d="M667 92 H680 M677 88.5 L680.5 92 L677 95.5" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M685 102 H672 M675 98.5 L671.5 102 L675 105.5" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="707" y="95" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#232F3E">Amazon API Gateway</text>
+<text x="707" y="114" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" fill="#5A6B7B">HTTP API</text>
+<rect x="931" y="62" width="268" height="82" rx="9" fill="#FFFFFF" stroke="#D5DBDB" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="931" y="62" width="5" height="82" rx="2.5" fill="#ED7100"/>
+<rect x="949" y="78" width="38" height="38" rx="8" fill="#ED7100"/>
+<text x="968" y="105" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="24" font-weight="700" fill="#FFFFFF" text-anchor="middle">&#955;</text>
+<text x="999" y="95" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#232F3E">AWS Lambda</text>
+<text x="999" y="114" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" fill="#5A6B7B">FastAPI container</text>
+<circle cx="370.0" cy="186" r="14" fill="#FF9900"/>
+<text x="370.0" y="191.5" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="15" font-weight="700" fill="#232F3E" text-anchor="middle">1</text>
+<text x="392.0" y="191" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" font-weight="600" fill="#5A6B7B" text-anchor="start">Upload dataset</text>
+<circle cx="680.0" cy="186" r="14" fill="#FF9900"/>
+<text x="680.0" y="191.5" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="15" font-weight="700" fill="#232F3E" text-anchor="middle">2</text>
+<text x="702.0" y="191" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" font-weight="600" fill="#5A6B7B" text-anchor="start">Review estimate and approve plan</text>
+<path d="M620.0 162 L620.0 214" stroke="#5A6B7B" stroke-width="2.2" fill="none" marker-end="url(#ah)"/>
+<rect x="30" y="216" width="1180" height="176" rx="12" fill="#F7F8F9" stroke="#D5DBDB" stroke-width="1.5"/>
+<text x="52" y="243" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14" font-weight="700" fill="#5A6B7B" letter-spacing="1.4">CONTROL PLANE</text>
+<rect x="55" y="254" width="350" height="118" rx="9" fill="#FFFFFF" stroke="#D5DBDB" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="55" y="254" width="5" height="118" rx="2.5" fill="#7AA116"/>
+<rect x="73" y="270" width="38" height="38" rx="8" fill="#7AA116"/>
+<path d="M83 281 H101 L98.5 299 H85.5 Z" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"/><path d="M83.8 287 H100.2" stroke="#FFFFFF" stroke-width="1.6"/>
+<text x="123" y="287" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="17" font-weight="700" fill="#232F3E">Amazon S3</text>
+<text x="123" y="306" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" fill="#5A6B7B">Dataset, run state,</text>
+<text x="123" y="325" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" fill="#5A6B7B">metrics and artifacts</text>
+<rect x="437" y="254" width="366" height="118" rx="9" fill="#FFFFFF" stroke="#D5DBDB" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="437" y="254" width="5" height="118" rx="2.5" fill="#01A88D"/>
+<rect x="455" y="270" width="38" height="38" rx="8" fill="#01A88D"/>
+<rect x="466" y="281" width="16" height="16" rx="2.5" fill="none" stroke="#FFFFFF" stroke-width="2"/><rect x="471" y="286" width="6" height="6" fill="#FFFFFF"/><path d="M469.5 281 V277 M469.5 297 V301" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/><path d="M466 284.5 H462 M482 284.5 H486" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/><path d="M478.5 281 V277 M478.5 297 V301" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/><path d="M466 293.5 H462 M482 293.5 H486" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+<text x="505" y="287" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="17" font-weight="700" fill="#232F3E">Orchestration core</text>
+<text x="505" y="306" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" fill="#5A6B7B">Deterministic Python on the</text>
+<text x="505" y="325" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" fill="#5A6B7B">SageMaker Python SDK</text>
+<rect x="835" y="254" width="350" height="118" rx="9" fill="#FFFFFF" stroke="#D5DBDB" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="835" y="254" width="5" height="118" rx="2.5" fill="#E7157B"/>
+<rect x="853" y="270" width="38" height="38" rx="8" fill="#E7157B"/>
+<circle cx="872" cy="289" r="9.5" fill="none" stroke="#FFFFFF" stroke-width="2"/><path d="M872 284 V289 L876.5 292" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="903" y="287" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="17" font-weight="700" fill="#232F3E">Amazon EventBridge</text>
+<text x="903" y="306" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" fill="#5A6B7B">Scheduled reconcile loop,</text>
+<text x="903" y="325" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" fill="#5A6B7B">advances runs headlessly</text>
+<path d="M405 313 H437" stroke="#5A6B7B" stroke-width="2.2" fill="none" marker-end="url(#ah)" marker-start="url(#ah)"/>
+<path d="M835 313 L803 313" stroke="#5A6B7B" stroke-width="2.2" fill="none" marker-end="url(#ah)"/>
+<circle cx="1163" cy="242" r="14" fill="#FF9900"/>
+<text x="1163" y="247.5" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="15" font-weight="700" fill="#232F3E" text-anchor="middle">5</text>
+<path d="M620.0 392 L620.0 452" stroke="#5A6B7B" stroke-width="2.2" fill="none" marker-end="url(#ah)"/>
+<circle cx="320.0" cy="422" r="14" fill="#FF9900"/>
+<text x="320.0" y="427.5" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="15" font-weight="700" fill="#232F3E" text-anchor="middle">3</text>
+<text x="342.0" y="427" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" font-weight="600" fill="#5A6B7B" text-anchor="start">Fan-out: SageMaker AI training jobs per candidate, run in parallel</text>
+<rect x="30" y="454" width="1180" height="268" rx="12" fill="#F7F8F9" stroke="#D5DBDB" stroke-width="1.5"/>
+<text x="52" y="481" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14" font-weight="700" fill="#5A6B7B" letter-spacing="1.4">TRAINING ENGINES — IDENTICAL DATASET, IDENTICAL PIPELINE</text>
+<rect x="58" y="492" width="552" height="128" rx="9" fill="#FFFFFF" stroke="#D5DBDB" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="58" y="492" width="5" height="128" rx="2.5" fill="#01A88D"/>
+<rect x="76" y="508" width="38" height="38" rx="8" fill="#01A88D"/>
+<path d="M95 516 L105 520 L95 524 L85 520 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="1.8" stroke-linejoin="round"/><path d="M95 523 L105 527 L95 531 L85 527 Z" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linejoin="round"/><path d="M95 530 L105 534 L95 538 L85 534 Z" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linejoin="round"/>
+<text x="126" y="525" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="17" font-weight="700" fill="#232F3E">Engine A · Self-hosted LLaMA-Factory</text>
+<text x="126" y="544" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" fill="#5A6B7B">SageMaker AI training jobs from an Amazon ECR image.</text>
+<text x="126" y="563" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" fill="#5A6B7B">30 built-in models, LoRA variants, preference losses</text>
+<rect x="630" y="492" width="552" height="128" rx="9" fill="#FFFFFF" stroke="#D5DBDB" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="630" y="492" width="5" height="128" rx="2.5" fill="#01A88D"/>
+<rect x="648" y="508" width="38" height="38" rx="8" fill="#01A88D"/>
+<path d="M667 516 L677 520 L667 524 L657 520 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="1.8" stroke-linejoin="round"/><path d="M667 523 L677 527 L667 531 L657 527 Z" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linejoin="round"/><path d="M667 530 L677 534 L667 538 L657 534 Z" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linejoin="round"/>
+<text x="698" y="525" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="17" font-weight="700" fill="#232F3E">Engine B · Serverless customization</text>
+<text x="698" y="544" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" fill="#5A6B7B">Managed SageMaker AI infrastructure.</text>
+<text x="698" y="563" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" fill="#5A6B7B">SFT, DPO, RLVR and RLAIF using GRPO</text>
+<rect x="76" y="634" width="516" height="42" rx="8" fill="#FFFFFF" stroke="#D5DBDB" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="134" y="660" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" font-weight="600" fill="#5A6B7B" text-anchor="middle">Train</text>
+<path d="M170 655 H272" stroke="#FF9900" stroke-width="2" fill="none" marker-end="url(#ah2)"/>
+<text x="308" y="660" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" font-weight="600" fill="#5A6B7B" text-anchor="middle">Merge</text>
+<path d="M346 655 H414" stroke="#FF9900" stroke-width="2" fill="none" marker-end="url(#ah2)"/>
+<text x="488" y="660" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" font-weight="600" fill="#5A6B7B" text-anchor="middle">Evaluate (vLLM)</text>
+<rect x="648" y="634" width="516" height="42" rx="8" fill="#FFFFFF" stroke="#D5DBDB" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="706" y="660" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" font-weight="600" fill="#5A6B7B" text-anchor="middle">Train</text>
+<path d="M742 655 H844" stroke="#FF9900" stroke-width="2" fill="none" marker-end="url(#ah2)"/>
+<text x="880" y="660" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" font-weight="600" fill="#5A6B7B" text-anchor="middle">Merge</text>
+<path d="M918 655 H986" stroke="#FF9900" stroke-width="2" fill="none" marker-end="url(#ah2)"/>
+<text x="1060" y="660" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" font-weight="600" fill="#5A6B7B" text-anchor="middle">Evaluate (vLLM)</text>
+<circle cx="620.0" cy="655" r="14" fill="#FF9900"/>
+<text x="620.0" y="660.5" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="15" font-weight="700" fill="#232F3E" text-anchor="middle">4</text>
+<path d="M620.0 722 L620.0 774" stroke="#5A6B7B" stroke-width="2.2" fill="none" marker-end="url(#ah)"/>
+<circle cx="370.0" cy="748" r="14" fill="#FF9900"/>
+<text x="370.0" y="753.5" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="15" font-weight="700" fill="#232F3E" text-anchor="middle">6</text>
+<text x="392.0" y="753" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" font-weight="600" fill="#5A6B7B" text-anchor="start">Assemble ranked leaderboard</text>
+<rect x="30" y="776" width="1180" height="208" rx="12" fill="#F7F8F9" stroke="#D5DBDB" stroke-width="1.5"/>
+<text x="52" y="803" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14" font-weight="700" fill="#5A6B7B" letter-spacing="1.4">COMPARISON LAYER</text>
+<rect x="58" y="814" width="552" height="118" rx="9" fill="#FFFFFF" stroke="#D5DBDB" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="58" y="814" width="5" height="118" rx="2.5" fill="#01A88D"/>
+<rect x="76" y="830" width="38" height="38" rx="8" fill="#01A88D"/>
+<rect x="85.5" y="851" width="5" height="7" rx="1" fill="#FFFFFF"/><rect x="92.5" y="845" width="5" height="13" rx="1" fill="#FFFFFF"/><rect x="99.5" y="848" width="5" height="10" rx="1" fill="#FFFFFF"/>
+<text x="126" y="847" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="17" font-weight="700" fill="#232F3E">Fair comparison harness</text>
+<text x="126" y="866" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" fill="#5A6B7B">One shared held-out set for every candidate.</text>
+<text x="126" y="885" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" fill="#5A6B7B">Identical decoding across every fine-tuned candidate</text>
+<rect x="630" y="814" width="552" height="118" rx="9" fill="#FFFFFF" stroke="#D5DBDB" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="630" y="814" width="5" height="118" rx="2.5" fill="#01A88D"/>
+<rect x="648" y="830" width="38" height="38" rx="8" fill="#01A88D"/>
+<path d="M667 838 L677 842 L667 846 L657 842 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="1.8" stroke-linejoin="round"/><path d="M667 845 L677 849 L667 853 L657 849 Z" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linejoin="round"/><path d="M667 852 L677 856 L667 860 L657 856 Z" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linejoin="round"/>
+<text x="698" y="847" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="17" font-weight="700" fill="#232F3E">Frontier baseline</text>
+<text x="698" y="866" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" fill="#5A6B7B">Claude, Nova and Llama on Amazon Bedrock,</text>
+<text x="698" y="885" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" fill="#5A6B7B">scored as rows rather than only as judges</text>
+<rect x="58" y="944" width="1124" height="26" rx="7" fill="#232F3E"/>
+<text x="620.0" y="962" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" font-weight="700" fill="#FFFFFF" text-anchor="middle">Ranked leaderboard — quality × measured cost × latency</text>
+<path d="M620.0 984 L620.0 1036" stroke="#5A6B7B" stroke-width="2.2" fill="none" marker-end="url(#ah)"/>
+<circle cx="370.0" cy="1010" r="14" fill="#FF9900"/>
+<text x="370.0" y="1015.5" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="15" font-weight="700" fill="#232F3E" text-anchor="middle">7</text>
+<text x="392.0" y="1015" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" font-weight="600" fill="#5A6B7B" text-anchor="start">Export deploy bundle</text>
+<rect x="340" y="1038" width="560" height="92" rx="9" fill="#FFFFFF" stroke="#D5DBDB" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="340" y="1038" width="5" height="92" rx="2.5" fill="#01A88D"/>
+<rect x="358" y="1054" width="38" height="38" rx="8" fill="#01A88D"/>
+<rect x="367" y="1063" width="20" height="9" rx="2" fill="none" stroke="#FFFFFF" stroke-width="2"/><circle cx="382.5" cy="1067.5" r="1.6" fill="#FFFFFF"/><rect x="367" y="1072" width="20" height="9" rx="2" fill="none" stroke="#FFFFFF" stroke-width="2"/><circle cx="382.5" cy="1076.5" r="1.6" fill="#FFFFFF"/>
+<text x="408" y="1071" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="17" font-weight="700" fill="#232F3E">Amazon SageMaker AI endpoint</text>
+<text x="408" y="1090" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" fill="#5A6B7B">Winning model deployed in your own account</text>
+<text x="408" y="1109" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="14.5" fill="#5A6B7B">Created by deploy.sh from the exported bundle</text>
+<defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#FF9900"/></marker></defs>
+</svg>

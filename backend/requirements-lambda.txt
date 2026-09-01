@@ -1,0 +1,15 @@
+# Runtime deps for the API Lambda image. Pinned loosely; the image is rebuilt
+# by CDK (DockerImageFunction) so a lockfile isn't required here.
+fastapi>=0.115
+python-multipart>=0.0.9
+pydantic>=2.7
+pyyaml>=6.0
+# V2 SageMaker SDK (provides sagemaker.estimator for the LLaMA-Factory engine).
+# The `<3` cap is LOAD-BEARING: do NOT add the V3 serverless-trainer SDK
+# (sagemaker-train / sagemaker-core 2.x / sagemaker 3.x) here — it is mutually
+# exclusive with V2 (removes sagemaker.estimator) and would break the default
+# engine. The serverless engine runs the V3 SDK in a SEPARATE interpreter via
+# subprocess (SLM_SERVERLESS_PYTHON).
+sagemaker>=2.220,<3
+boto3>=1.34
+mangum>=0.17

@@ -1,0 +1,17 @@
+{
+  "app": "python3 app.py",
+  "watch": {
+    "include": ["**"],
+    "exclude": [
+      "README.md",
+      "cdk*.json",
+      "requirements*.txt",
+      ".venv",
+      "**/__pycache__"
+    ]
+  },
+  "context": {
+    "@aws-cdk/core:newStyleStackSynthesis": true,
+    "@aws-cdk/aws-iam:minimizePolicies": true
+  }
+}
