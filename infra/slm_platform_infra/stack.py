@@ -48,6 +48,7 @@ from aws_cdk import (
     aws_codebuild as codebuild,
     aws_cognito as cognito,
     aws_ecr as ecr,
+    aws_ecr_assets as ecr_assets,
     aws_events as events,
     aws_events_targets as targets,
     aws_iam as iam,
@@ -412,11 +413,22 @@ class SlmPlatformInfraStack(Stack):
             "SLM_NOTIFY_FROM_NAME": notify_from_name,
         }
 
+        # The three Lambdas below run on x86_64 (DockerImageFunction's default),
+        # so the image MUST be built for linux/amd64. Without an explicit platform
+        # CDK builds for the deployer's host, and on an Apple Silicon Mac that is
+        # linux/arm64: the deploy succeeds, then every invocation — including the
+        # unauthenticated /api/health — fails with Runtime.InvalidEntrypoint and
+        # the SPA shows "500" toasts on its first data load.
+        backend_platform = ecr_assets.Platform.LINUX_AMD64
+
         api_fn = lambda_.DockerImageFunction(
             self,
             "ApiFunction",
             function_name=f"{prefix}-api",
-            code=lambda_.DockerImageCode.from_image_asset(str(BACKEND_DIR)),
+            code=lambda_.DockerImageCode.from_image_asset(
+                str(BACKEND_DIR),
+                platform=backend_platform,
+            ),
             memory_size=2048,
             timeout=Duration.seconds(29),  # API GW HTTP API max integration timeout
             environment=common_env,
@@ -430,6 +442,7 @@ class SlmPlatformInfraStack(Stack):
             code=lambda_.DockerImageCode.from_image_asset(
                 str(BACKEND_DIR),
                 cmd=["app.lambda_handler.reconcile_handler"],
+                platform=backend_platform,
             ),
             memory_size=1024,
             timeout=Duration.minutes(5),
@@ -447,6 +460,7 @@ class SlmPlatformInfraStack(Stack):
             code=lambda_.DockerImageCode.from_image_asset(
                 str(BACKEND_DIR),
                 cmd=["app.lambda_handler.worker_handler"],
+                platform=backend_platform,
             ),
             memory_size=1024,
             timeout=Duration.minutes(15),

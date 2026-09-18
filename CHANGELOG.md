@@ -5,6 +5,16 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- The three backend Lambda container images (API, reconcile, worker) are now built for
+  `linux/amd64` explicitly. Without the pin, CDK built them for the deployer's host CPU, so a deploy
+  from an Apple Silicon Mac produced arm64 images on x86_64 functions and every `/api/*` request,
+  including the unauthenticated `/api/health`, failed with `Runtime.InvalidEntrypoint`. In the UI
+  this showed as "500" toasts on the first data load.
+
 ## [1.0.0] - 2026-08-28
 
 Initial public release of the SLM Finetuning and Evaluation Platform.
