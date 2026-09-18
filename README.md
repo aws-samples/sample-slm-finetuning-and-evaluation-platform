@@ -129,7 +129,7 @@ docs/       architecture diagram
 | Node.js | 20 or newer | CDK bundles the SPA in a Node 20 image; the build uses Vite 5 |
 | AWS CDK CLI | v2 (`npm install -g aws-cdk`) | `infra/requirements.txt` requires `aws-cdk-lib>=2.140,<3` — a range, not a lockfile, so two deploys can resolve different CDK versions |
 | Python | 3.11 or newer | `backend/pyproject.toml` sets `requires-python = ">=3.11"` |
-| Docker | running | `cdk deploy` builds the backend Lambda container image from `backend/Dockerfile` and runs `npm ci && npm run build` in a container |
+| Docker | running | `cdk deploy` builds the backend Lambda container image from `backend/Dockerfile` and runs `npm ci && npm run build` in a container. The Lambda image is built for `linux/amd64` regardless of the host; on an Apple Silicon Mac, Docker Desktop builds it under emulation, which is slower but needs no extra setup |
 | uv | current | Only for `agent/`, which has a `uv.lock`. `agent/.python-version` pins Python 3.10 |
 
 Also needed before the platform can do real work:
