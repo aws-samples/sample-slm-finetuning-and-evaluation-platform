@@ -132,7 +132,7 @@ starlette==1.6.0
     #   bedrock-agentcore
     #   mcp
     #   sse-starlette
-strands-agents==1.42.0
+strands-agents==1.48.0
     # via agent
 typing-extensions==4.15.0
     # via
